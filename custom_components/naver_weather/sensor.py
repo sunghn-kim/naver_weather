@@ -41,8 +41,8 @@ _INFO = {
     'WindState':      ['현재풍향',     '',      'mdi:weather-windy'],
     'Rainfall':       ['시간당강수량', 'mm',    'mdi:weather-pouring'],
     'TodayUV':        ['자외선지수',   '',      'mdi:weather-sunny-alert'],
-    'UltraFineDust':  ['초미세먼지',   '㎍/㎥', 'mdi:blur-linear'],
-    'FineDust':       ['미세먼지',     '㎍/㎥', 'mdi:blur'],
+    'UltraFineDust':  ['초미세먼지',   '㎍/m³', 'mdi:blur-linear'],
+    'FineDust':       ['미세먼지',     '㎍/m³', 'mdi:blur'],
     'UltraFineDustGrade': ['초미세먼지등급', '', 'mdi:blur-linear'],
     'FineDustGrade':  ['미세먼지등급', '',      'mdi:blur'],
     'Ozon':           ['오존',         'ppm',   'mdi:alpha-o-circle'],
@@ -165,11 +165,11 @@ class NWeatherAPI:
                 CheckDust.append(i.text)
 
             FineDust      = CheckDust[0].split('㎍/㎥')[0]
-            FineDustGrade = CheckDust[0].split('㎍/㎥')[1]
+            FineDustGrade = CheckDust[0].split('㎍/㎥')[1] if CheckDust[0].split('㎍/㎥')[1] else '-'
             UltraFineDust = CheckDust[1].split('㎍/㎥')[0]
-            UltraFineDustGrade = CheckDust[1].split('㎍/㎥')[1]
+            UltraFineDustGrade = CheckDust[1].split('㎍/㎥')[1] if CheckDust[1].split('㎍/㎥')[1] else '-'
             Ozon      = CheckDust[2].split('ppm')[0]
-            OzonGrade = CheckDust[2].split('ppm')[1]
+            OzonGrade = CheckDust[2].split('ppm')[1] if CheckDust[2].split('ppm')[1] else '-'
 
             # 현재 습도
             humi_tab = soup.find('div', {'class': 'info_list humidity _tabContent _center'})
