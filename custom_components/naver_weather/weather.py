@@ -8,7 +8,6 @@ from datetime import datetime, timedelta
 import voluptuous as vol
 import homeassistant.helpers.config_validation as cv
 from homeassistant.helpers.entity import Entity
-from homeassistant.util import Throttle
 
 from homeassistant.components.weather import (
     ATTR_FORECAST_CONDITION,
