@@ -9,7 +9,6 @@ from datetime import timedelta
 from homeassistant.components.sensor import PLATFORM_SCHEMA
 from homeassistant.const import (CONF_NAME, CONF_SCAN_INTERVAL, CONF_MONITORED_CONDITIONS)
 from homeassistant.helpers.entity import Entity
-from homeassistant.util import Throttle
 
 
 REQUIREMENTS = ["beautifulsoup4==4.9.0"]
@@ -26,8 +25,10 @@ DEFAULT_NAME = 'naver_weather'
 DEFAULT_AREA = '날씨'
 DEFAULT_AREA_SUB = ''
 
-SCAN_INTERVAL = timedelta(seconds=900)
+SCAN_INTERVAL = timedelta(seconds=3)
 SCAN_INTERVAL_SUB = timedelta(seconds=1020)
+
+_UPDATE_CALL_COUNT = 0
 
 _INFO = {
     'LocationInfo':   ['위치',         '',      'mdi:map-marker-radius'],
@@ -280,9 +281,17 @@ class NWeatherSensor(Entity):
         """Return the state of the sensor."""
         return self._api.result["WeatherCast"]
 
-    @Throttle(SCAN_INTERVAL)
     def update(self):
         """Get the latest state of the sensor."""
+        global _UPDATE_CALL_COUNT
+
+        _UPDATE_CALL_COUNT += 1
+
+        if _UPDATE_CALL_COUNT < 200:  # 3 x 200 = Runs every 600 seconds.
+            return
+        else:
+            _UPDATE_CALL_COUNT = 0
+
         if self._api is None:
             return
 
