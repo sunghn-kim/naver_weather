@@ -89,7 +89,10 @@ _INFO = {
 CONF_AREA    = 'area'
 DEFAULT_AREA = '날씨'
 
-SCAN_INTERVAL = timedelta(seconds=600)
+SCAN_INTERVAL = timedelta(seconds=3)
+
+_UPDATE_CALL_COUNT_MAIN = 0
+_UPDATE_CALL_COUNT_SUB = 0
 
 # area_sub
 CONF_AREA_SUB    = 'area_sub'
@@ -112,11 +115,12 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
     vol.Optional(CONF_SENSOR_USE, default=DEFAULT_SENSOR_USE): cv.string,
 })
 
+
 def setup_platform(hass, config, add_entities, discovery_info=None):
     """Set up the Demo weather."""
     # sensor use
     sensor_use    = config.get(CONF_SENSOR_USE)
-    
+
     # area config
     area          = config.get(CONF_AREA)
     SCAN_INTERVAL = config.get(CONF_SCAN_INTERVAL)
@@ -144,7 +148,6 @@ def setup_platform(hass, config, add_entities, discovery_info=None):
         add_entities(sensors, True)
 
     add_entities([NaverWeather(cur, api, 'M')])
-
 
     #sub
     area_sub = config.get(CONF_AREA_SUB)
@@ -373,9 +376,9 @@ class NWeatherAPI:
             raise
 
 
-
 class NaverWeather(WeatherEntity):
     """Representation of a weather condition."""
+
     def __init__(self, forecast, api, gb):
         """Initialize the Demo weather."""
         self._name = 'NaverWeather'
@@ -390,6 +393,15 @@ class NaverWeather(WeatherEntity):
 
     def update(self):
         """Update current conditions."""
+        global _UPDATE_CALL_COUNT_MAIN
+
+        _UPDATE_CALL_COUNT_MAIN += 1
+
+        if _UPDATE_CALL_COUNT_MAIN < 100:  # 3 x 100 = Runs every 300 seconds.
+            return
+        else:
+            _UPDATE_CALL_COUNT_MAIN = 0
+
         self._api.update()
 
         self._forecast = self._api.forecast
@@ -450,6 +462,7 @@ class NaverWeather(WeatherEntity):
         """Return the forecast."""
         return self._forecast
 
+
 class childSensor(Entity):
     """Representation of a NWeather Sensor."""
     _STATE = None
@@ -489,7 +502,6 @@ class childSensor(Entity):
     def unit_of_measurement(self):
         """Return the unit the value is expressed in."""
         return _INFO[self._key][1]
-
 
     def update(self):
         """Get the latest state of the sensor."""
@@ -557,6 +569,15 @@ class NWeatherSensor(Entity):
 
     def update(self):
         """Get the latest state of the sensor."""
+        global _UPDATE_CALL_COUNT_SUB
+
+        _UPDATE_CALL_COUNT_SUB += 1
+
+        if _UPDATE_CALL_COUNT_SUB < 100:  # 3 x 100 = Runs every 300 seconds.
+            return
+        else:
+            _UPDATE_CALL_COUNT_SUB = 0
+
         if self._api is None:
             return
 
