@@ -10,7 +10,6 @@ from homeassistant.components.sensor import PLATFORM_SCHEMA
 from homeassistant.const import (CONF_NAME, CONF_SCAN_INTERVAL, CONF_MONITORED_CONDITIONS)
 from homeassistant.helpers.entity import Entity
 
-
 REQUIREMENTS = ["beautifulsoup4==4.9.0"]
 
 _LOGGER = logging.getLogger(__name__)
@@ -108,6 +107,7 @@ def setup_platform(hass, config, add_entities, discovery_info=None):
 
         add_entities(sensors_s, True)
 
+
 class NWeatherAPI:
     """NWeather API."""
 
@@ -175,10 +175,10 @@ class NWeatherAPI:
             # 현재 습도
             humi_tab = soup.find('div', {'class': 'info_list humidity _tabContent _center'})
             Humidity = '-'
-            
+
             if humi_tab is not None:
                 Humidity = humi_tab.select('ul > li.on.now > dl > dd.weather_item._dotWrapper > span')[0].text.strip()
-                
+
             # 현재풍속
             wind_tab = soup.find('div', {'class': 'info_list wind _tabContent _center'})
             WindSpeed = '-'
@@ -190,7 +190,6 @@ class NWeatherAPI:
 
                 WindSpeed = windSelect[0].text
                 WindState = windstateSelect[0].text.strip()
-
 
             # 내일 오전, 오후 온도 및 상태 체크
             tomorrowArea = soup.find('div', {'class': 'tomorrow_area'})
@@ -222,13 +221,13 @@ class NWeatherAPI:
             weather["TodayMaxTemp"]   = TodayMaxTemp
             weather["TodayFeelTemp"]  = TodayFeelTemp
             weather["Humidity"]       = Humidity
-            
+
             weather["WindSpeed"]      = WindSpeed
             weather["WindState"]      = WindState
 
             weather['Rainfall']       = Rainfall
             weather["TodayUV"]        = TodayUV
-            
+
             weather["FineDust"]       = FineDust
             weather["FineDustGrade"]  = FineDustGrade
             weather["UltraFineDust"]      = UltraFineDust
@@ -287,7 +286,7 @@ class NWeatherSensor(Entity):
 
         _UPDATE_CALL_COUNT += 1
 
-        if _UPDATE_CALL_COUNT < 200:  # 3 x 200 = Runs every 600 seconds.
+        if _UPDATE_CALL_COUNT < 100:  # 3 x 100 = Runs every 300 seconds.
             return
         else:
             _UPDATE_CALL_COUNT = 0
@@ -310,6 +309,7 @@ class NWeatherSensor(Entity):
             data[_INFO[key][0]] = '{}{}'.format(value, _INFO[key][1])
 
         return data
+
 
 class childSensor(Entity):
     """Representation of a NWeather Sensor."""
