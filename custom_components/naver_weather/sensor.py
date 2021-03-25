@@ -39,7 +39,7 @@ _INFO = {
     'Humidity':       ['현재습도',     '%',     'mdi:water-percent'],
     'WindSpeed':      ['현재풍속',     'm/s',   'mdi:weather-windy'],
     'WindState':      ['현재풍향',     '',      'mdi:weather-windy'],
-    'Rainfall':       ['시간당 강수량', 'mm',    'mdi:weather-pouring'],
+    'Rainfall':       ['시간당 강수량', 'mm',   'mdi:weather-pouring'],
     'TodayUV':        ['자외선지수',   '',      'mdi:weather-sunny-alert'],
     'UltraFineDust':  ['초미세먼지',   '㎍/m³', 'mdi:blur-linear'],
     'FineDust':       ['미세먼지',     '㎍/m³', 'mdi:blur'],
