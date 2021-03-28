@@ -62,27 +62,27 @@ _CONDITIONS = {
 
 # naver provide infomation
 _INFO = {
-    'LocationInfo':   ['위치',         '',      'mdi:map-marker-radius'],
-    'WeatherCast':    ['현재날씨',     '',      'mdi:weather-cloudy'],
-    'NowTemp':        ['현재온도',     '°C',    'mdi:thermometer'],
-    'TodayMinTemp':   ['최저온도',     '°C',    'mdi:thermometer-chevron-down'],
-    'TodayMaxTemp':   ['최고온도',     '°C',    'mdi:thermometer-chevron-up'],
-    'TodayFeelTemp':  ['체감온도',     '°C',    'mdi:thermometer'],
-    'Humidity':       ['현재습도',     '%',     'mdi:water-percent'],
-    'WindSpeed':      ['현재풍속',     'm/s',   'mdi:weather-windy'],
-    'WindState':      ['현재풍향',     '',      'mdi:weather-windy'],
-    'Rainfall':       ['시간당 강수량', 'mm',   'mdi:weather-pouring'],
-    'TodayUV':        ['자외선지수',   '',      'mdi:weather-sunny-alert'],
-    'UltraFineDust':  ['초미세먼지',   '㎍/m³', 'mdi:blur-linear'],
-    'FineDust':       ['미세먼지',     '㎍/m³', 'mdi:blur'],
-    'UltraFineDustGrade': ['초미세먼지등급', '', 'mdi:blur-linear'],
-    'FineDustGrade':  ['미세먼지등급', '',      'mdi:blur'],
-    'Ozon':           ['오존',         'ppm',   'mdi:alpha-o-circle'],
-    'OzonGrade':      ['오존등급',     '',      'mdi:alpha-o-circle'],
-    'tomorrowAState': ['내일오후날씨', '',      'mdi:weather-cloudy'],
-    'tomorrowATemp':  ['내일최고온도', '°C',    'mdi:thermometer-chevron-up'],
-    'tomorrowMState': ['내일오전날씨', '',      'mdi:weather-cloudy'],
-    'tomorrowMTemp':  ['내일최저온도', '°C',    'mdi:thermometer-chevron-down']
+    'Location':             ['네이버 날씨 - 위치',            '',      'hass:map-marker-radius'],
+    'Weather_Condition':    ['네이버 날씨 - 현재 날씨',       '',      'hass:weather-cloudy'],
+    'Temperature':          ['네이버 날씨 - 현재 온도',       '°C',    'hass:thermometer'],
+    'Low_Temperature':      ['네이버 날씨 - 최저 온도',       '°C',    'hass:thermometer-chevron-down'],
+    'High_Temperature':     ['네이버 날씨 - 최고 온도',       '°C',    'hass:thermometer-chevron-up'],
+    'Apparent_Temperature': ['네이버 날씨 - 체감 온도',       '°C',    'hass:thermometer'],
+    'Humidity':             ['네이버 날씨 - 현재 습도',       '%',     'hass:water-percent'],
+    'Wind_Speed':           ['네이버 날씨 - 현재 풍속',       'm/s',   'hass:weather-windy'],
+    'Wind_Direction':       ['네이버 날씨 - 현재 풍향',       '',      'hass:weather-windy'],
+    'Precipitation':        ['네이버 날씨 - 시간당 강수량',   'mm',    'hass:weather-pouring'],
+    'Ultraviolet_Index':    ['네이버 날씨 - 자외선지수',      '',      'hass:weather-sunny-alert'],
+    'Ozon':                 ['네이버 날씨 - 오존',            'ppm',   'hass:alpha-o-circle'],
+    'Ozon_Level':           ['네이버 날씨 - 오존 수준',       '',      'hass:alpha-o-circle'],
+    'Fine_Dust':            ['네이버 날씨 - 미세먼지',        '㎍/m³', 'hass:blur'],
+    'Fine_Dust_Level':      ['네이버 날씨 - 미세먼지 수준',   '',      'hass:blur'],
+    'Ultrafine_Dust':       ['네이버 날씨 - 초미세먼지',      '㎍/m³', 'hass:blur-linear'],
+    'Ultrafine_Dust_Level': ['네이버 날씨 - 초미세먼지 수준', '',      'hass:blur-linear'],
+    'Tomorrow_Morning_Temperature':         ['네이버 날씨 - 내일 최저 온도', '°C', 'hass:thermometer-chevron-down'],
+    'Tomorrow_Morning_Weather_Condition':   ['네이버 날씨 - 내일 오전 날씨', '',   'hass:weather-cloudy'],
+    'Tomorrow_Afternoon_Temperature':       ['네이버 날씨 - 내일 최고 온도', '°C', 'hass:thermometer-chevron-up'],
+    'Tomorrow_Afternoon_Weather_Condition': ['네이버 날씨 - 내일 오후 날씨', '',   'hass:weather-cloudy']
 }
 
 # area
@@ -139,11 +139,11 @@ def setup_platform(hass, config, add_entities, discovery_info=None):
         child   = []
 
         for key, value in api._sensor.items():
-            sensor = childSensor('naver_weather', key, value, 'M')
+            sensor = childSensor('multiple_attributes_naver_weather', key, value, 'M')
             child   += [sensor]
             sensors += [sensor]
 
-        sensors += [NWeatherSensor('naver_weather', api, child, 'M')]
+        sensors += [NWeatherSensor('multiple_attributes_naver_weather', api, child, 'M')]
 
         add_entities(sensors, True)
 
@@ -186,89 +186,89 @@ class NWeatherAPI:
 
             soup = BeautifulSoup(response.text, 'html.parser')
 
-            NowTemp = ""
+            Temperature = ""
             CheckDust = []
 
             # 지역
-            LocationInfo = soup.find('span', {'class':'btn_select'}).text
+            Location = soup.find('span', {'class':'btn_select'}).text
 
             # 현재 온도
-            NowTemp = soup.find('span', {'class': 'todaytemp'}).text
+            Temperature = soup.find('span', {'class': 'todaytemp'}).text
 
-            # 날씨 캐스트
-            WeatherCast = soup.find('p', {'class' : 'cast_txt'}).text
+            # 현재 날씨
+            Weather_Condition = soup.find('p', {'class' : 'cast_txt'}).text
 
-            # 오늘 오전온도, 오후온도, 체감온도
-            TodayMinTemp  = soup.find('span', {'class' : 'min'}).select('span.num')[0].text
-            TodayMaxTemp  = soup.find('span', {'class' : 'max'}).select('span.num')[0].text
-            TodayFeelTemp = soup.find('span', {'class' : 'sensible'}).select('em > span.num')[0].text
+            # 오늘 최저 온도, 최고 온도, 체감 온도
+            Low_Temperature      = soup.find('span', {'class' : 'min'}).select('span.num')[0].text
+            High_Temperature     = soup.find('span', {'class' : 'max'}).select('span.num')[0].text
+            Apparent_Temperature = soup.find('span', {'class' : 'sensible'}).select('em > span.num')[0].text
 
             # 시간당 강수량
-            TodayRainfall = soup.find('span', {'class' : 'rainfall'})
-            Rainfall = '-'
+            TodayPrecipitation = soup.find('span', {'class' : 'rainfall'})
+            Precipitation = '-'
 
-            if TodayRainfall is not None:
-                TodayRainfallSelect = TodayRainfall.select('em > span.num')
+            if TodayPrecipitation is not None:
+                TodayPrecipitationSelect = TodayPrecipitation.select('em > span.num')
 
-                for rain in TodayRainfallSelect:
-                    Rainfall = rain.text
+                for rain in TodayPrecipitationSelect:
+                    Precipitation = rain.text
 
-            # 자외선 지수
-            TodayUVSelect = soup.find('span', {'class' : 'indicator'}).select('span > span.num')
-            TodayUV = '-'
+            # 자외선지수
+            Ultraviolet_Index_Select = soup.find('span', {'class' : 'indicator'}).select('span > span.num')
+            Ultraviolet_Index = '-'
 
-            for uv in TodayUVSelect:
-                TodayUV = uv.text
+            for uv in Ultraviolet_Index_Select:
+                Ultraviolet_Index = uv.text
 
-            # 미세먼지, 초미세먼지, 오존 지수
+            # 미세먼지, 초미세먼지, 오존 수준
             CheckDust1 = soup.find('div', {'class': 'sub_info'})
             CheckDust2 = CheckDust1.find('div', {'class': 'detail_box'})
 
             for i in CheckDust2.select('dd'):
                 CheckDust.append(i.text)
 
-            FineDust      = CheckDust[0].split('㎍/㎥')[0]
-            FineDustGrade = CheckDust[0].split('㎍/㎥')[1] if CheckDust[0].split('㎍/㎥')[1] else '-'
-            UltraFineDust = CheckDust[1].split('㎍/㎥')[0]
-            UltraFineDustGrade = CheckDust[1].split('㎍/㎥')[1] if CheckDust[1].split('㎍/㎥')[1] else '-'
-            Ozon      = CheckDust[2].split('ppm')[0]
-            OzonGrade = CheckDust[2].split('ppm')[1] if CheckDust[2].split('ppm')[1] else '-'
+            Fine_Dust       = CheckDust[0].split('㎍/㎥')[0]
+            Fine_Dust_Level = CheckDust[0].split('㎍/㎥')[1] if CheckDust[0].split('㎍/㎥')[1] else '-'
+            Ultrafine_Dust       = CheckDust[1].split('㎍/㎥')[0]
+            Ultrafine_Dust_Level = CheckDust[1].split('㎍/㎥')[1] if CheckDust[1].split('㎍/㎥')[1] else '-'
+            Ozon       = CheckDust[2].split('ppm')[0]
+            Ozon_Level = CheckDust[2].split('ppm')[1] if CheckDust[2].split('ppm')[1] else '-'
 
             # condition
             today_area = soup.find('div', {'class' : 'today_area _mainTabContent'})
 
             condition_main = today_area.select('div.main_info > span.ico_state')[0]["class"][1]
-            condition = _CONDITIONS[condition_main][0]
+            condition      = _CONDITIONS[condition_main][0]
 
             # 현재 습도
             humi_tab = soup.find('div', {'class': 'info_list humidity _tabContent _center'})
             Humidity = humi_tab.select('ul > li.on.now > dl > dd.weather_item._dotWrapper > span')[0].text
 
-            # 현재풍속
-            wind_tab = soup.find('div', {'class': 'info_list wind _tabContent _center'})
-            WindSpeed  = wind_tab.select('ul > li.on.now > dl > dd.weather_item._dotWrapper > span')[0].text
-            WindState  = wind_tab.select('ul > li.on.now > dl > dd.item_condition > span.wt_status')[0].text.strip()
+            # 현재 풍속
+            wind_tab       = soup.find('div', {'class': 'info_list wind _tabContent _center'})
+            Wind_Speed     = wind_tab.select('ul > li.on.now > dl > dd.weather_item._dotWrapper > span')[0].text
+            Wind_Direction = wind_tab.select('ul > li.on.now > dl > dd.item_condition > span.wt_status')[0].text.strip()
 
-            # 내일 오전, 오후 온도 및 상태 체크
-            tomorrowArea = soup.find('div', {'class': 'tomorrow_area'})
+            # 내일 오전, 오후 온도 및 날씨 확인
+            tomorrowArea  = soup.find('div', {'class': 'tomorrow_area'})
             tomorrowCheck = tomorrowArea.find_all('div', {'class': 'main_info morning_box'})
 
-            # 내일 오전온도
-            tomorrowMTemp = tomorrowCheck[0].find('span', {'class': 'todaytemp'}).text
+            # 내일 오전 온도
+            Tomorrow_Morning_Temperature = tomorrowCheck[0].find('span', {'class': 'todaytemp'}).text
 
-            # 내일 오전상태
-            tomorrowMState1 = tomorrowCheck[0].find('div', {'class' : 'info_data'})
-            tomorrowMState2 = tomorrowMState1.find('ul', {'class' : 'info_list'})
-            tomorrowMState  = tomorrowMState2.find('p', {'class' : 'cast_txt'}).text
+            # 내일 오전 날씨
+            Tomorrow_Morning_Weather_Condition_1 = tomorrowCheck[0].find('div', {'class' : 'info_data'})
+            Tomorrow_Morning_Weather_Condition_2 = Tomorrow_Morning_Weather_Condition_1.find('ul', {'class' : 'info_list'})
+            Tomorrow_Morning_Weather_Condition   = Tomorrow_Morning_Weather_Condition_2.find('p', {'class' : 'cast_txt'}).text
 
-            # 내일 오후온도
-            tomorrowATemp1 = tomorrowCheck[1].find('p', {'class' : 'info_temperature'})
-            tomorrowATemp  = tomorrowATemp1.find('span', {'class' : 'todaytemp'}).text
+            # 내일 오후 온도
+            Tomorrow_Afternoon_Temperature_1 = tomorrowCheck[1].find('p', {'class' : 'info_temperature'})
+            Tomorrow_Afternoon_Temperature   = Tomorrow_Afternoon_Temperature_1.find('span', {'class' : 'todaytemp'}).text
 
-            # 내일 오후상태
-            tomorrowAState1 = tomorrowCheck[1].find('div', {'class' : 'info_data'})
-            tomorrowAState2 = tomorrowAState1.find('ul', {'class' : 'info_list'})
-            tomorrowAState  = tomorrowAState2.find('p', {'class' : 'cast_txt'}).text
+            # 내일 오후 날씨
+            Tomorrow_Afternoon_Weather_Condition_1 = tomorrowCheck[1].find('div', {'class' : 'info_data'})
+            Tomorrow_Afternoon_Weather_Condition_2 = Tomorrow_Afternoon_Weather_Condition_1.find('ul', {'class' : 'info_list'})
+            Tomorrow_Afternoon_Weather_Condition   = Tomorrow_Afternoon_Weather_Condition_2.find('p', {'class' : 'cast_txt'}).text
 
             #주간날씨
             weekly = soup.find('div', {'class': 'table_info weekly _weeklyWeather'})
@@ -309,7 +309,7 @@ class NWeatherAPI:
                 condition_am = di.select('span.point_time.morning > span.ico_state2')[0]
                 condition_pm = di.select('span.point_time.afternoon > span.ico_state2')[0]
 
-                data['condition'] = _CONDITIONS[condition_pm["class"][1]][0]
+                data['condition']    = _CONDITIONS[condition_pm["class"][1]][0]
                 data['condition_am'] = _CONDITIONS[condition_am["class"][1]][2]
                 data['condition_pm'] = _CONDITIONS[condition_pm["class"][1]][2]
 
@@ -331,43 +331,39 @@ class NWeatherAPI:
 
             #날씨
             weather = dict()
-            weather["LocationInfo"]   = LocationInfo
-            weather["NowTemp"]        = NowTemp
-            weather["Humidity"]       = Humidity
-            weather["Condition"]      = condition
-            weather["WeatherCast"]    = WeatherCast
-            weather["WindSpeed"]      = WindSpeed
-            weather["WindBearing"]    = WindState
+            weather["Location"]          = Location
+            weather["Temperature"]       = Temperature
+            weather["Humidity"]          = Humidity
+            weather["Condition"]         = condition
+            weather["Weather_Condition"] = Weather_Condition
+            weather["Wind_Speed"]        = Wind_Speed
+            weather["Wind_Direction"]    = Wind_Direction
 
             self.result = weather
 
             #sensor
             ws = dict()
-            ws["LocationInfo"]   = LocationInfo
-            ws["WeatherCast"]    = WeatherCast
-            ws["NowTemp"]        = NowTemp
-            ws["TodayMinTemp"]   = TodayMinTemp
-            ws["TodayMaxTemp"]   = TodayMaxTemp
-            ws["TodayFeelTemp"]  = TodayFeelTemp
-            ws["Humidity"]       = Humidity
-
-            ws["WindSpeed"]      = WindSpeed
-            ws["WindState"]      = WindState
-
-            ws['Rainfall']       = Rainfall
-            ws["TodayUV"]        = TodayUV
-
-            ws["FineDust"]           = FineDust
-            ws["FineDustGrade"]      = FineDustGrade
-            ws["UltraFineDust"]      = UltraFineDust
-            ws["UltraFineDustGrade"] = UltraFineDustGrade
-            ws["Ozon"]               = Ozon
-            ws["OzonGrade"]          = OzonGrade
-
-            ws["tomorrowMTemp"]  = tomorrowMTemp
-            ws["tomorrowMState"] = tomorrowMState
-            ws["tomorrowATemp"]  = tomorrowATemp
-            ws["tomorrowAState"] = tomorrowAState
+            ws["Location"]             = Location
+            ws["Weather_Condition"]    = Weather_Condition
+            ws["Temperature"]          = Temperature
+            ws["Low_Temperature"]      = Low_Temperature
+            ws["High_Temperature"]     = High_Temperature
+            ws["Apparent_Temperature"] = Apparent_Temperature
+            ws["Humidity"]             = Humidity
+            ws["Wind_Speed"]           = Wind_Speed
+            ws["Wind_Direction"]       = Wind_Direction
+            ws['Precipitation']        = Precipitation
+            ws["Ultraviolet_Index"]    = Ultraviolet_Index
+            ws["Ozon"]                 = Ozon
+            ws["Ozon_Level"]           = Ozon_Level
+            ws["Fine_Dust"]            = Fine_Dust
+            ws["Fine_Dust_Level"]      = Fine_Dust_Level
+            ws["Ultrafine_Dust"]       = Ultrafine_Dust
+            ws["Ultrafine_Dust_Level"] = Ultrafine_Dust_Level
+            ws["Tomorrow_Morning_Temperature"]         = Tomorrow_Morning_Temperature
+            ws["Tomorrow_Morning_Weather_Condition"]   = Tomorrow_Morning_Weather_Condition
+            ws["Tomorrow_Afternoon_Temperature"]       = Tomorrow_Afternoon_Temperature
+            ws["Tomorrow_Afternoon_Weather_Condition"] = Tomorrow_Afternoon_Weather_Condition
 
             self._sensor = ws
 
@@ -380,13 +376,15 @@ class NaverWeather(WeatherEntity):
     """Representation of a weather condition."""
 
     def __init__(self, forecast, api, gb):
-        """Initialize the Demo weather."""
-        self._name = 'NaverWeather'
-        self._condition        = api.result["NowTemp"]
-        self._temperature      = float(api.result["NowTemp"])
+        """Initialize the Naver Weather."""
+        self._icon             = 'hass:weather-partly-cloudy'
+        self._name             = '네이버 날씨'
+        self._entity_id        = "weather.naver_weather"
+        self._condition        = api.result["Temperature"]
+        self._temperature      = float(api.result["Temperature"])
         self._temperature_unit = '°C'
         self._humidity         = int(api.result["Humidity"])
-        self._wind_speed       = (float(api.result["WindSpeed"]) * 3.6)
+        self._wind_speed       = (float(api.result["Wind_Speed"]) * 3.6)
         self._forecast         = forecast
         self._api              = api
         self._gb               = gb
@@ -410,6 +408,11 @@ class NaverWeather(WeatherEntity):
             _LOGGER.info("Don't receive weather data from NAVER!")
 
     @property
+    def icon(self):
+        """Return the icon to use in the frontend."""
+        return self._icon
+
+    @property
     def name(self):
         """Return the name of the sensor."""
         if self._gb == 'M':
@@ -418,9 +421,14 @@ class NaverWeather(WeatherEntity):
             return '{}_sub'.format(self._name)
 
     @property
+    def entity_id(self):
+        """Return the entity ID for this entity."""
+        return self._entity_id
+
+    @property
     def temperature(self):
         """Return the temperature."""
-        return float(self._api.result["NowTemp"])
+        return float(self._api.result["Temperature"])
 
     @property
     def temperature_unit(self):
@@ -435,12 +443,12 @@ class NaverWeather(WeatherEntity):
     @property
     def wind_speed(self):
         """Return the wind speed."""
-        return ( float(self._api.result["WindSpeed"]) * 3.6 )
+        return (float(self._api.result["Wind_Speed"]) * 3.6)
 
     @property
     def wind_bearing(self):
         """Return the wind bearing."""
-        return self._api.result["WindBearing"]
+        return self._api.result["Wind_Direction"]
 
     @property
     def condition(self):
@@ -476,22 +484,22 @@ class childSensor(Entity):
         self._gb    = gb
 
     @property
-    def entity_id(self):
-        """Return the entity ID."""
-        if self._gb == 'M':
-            return 'sensor.nw_{}'.format(self._key.lower())
-        else:
-            return 'sensor.nw_sub_{}'.format(self._key.lower())
+    def icon(self):
+        """Return the icon to use in the frontend."""
+        return _INFO[self._key][2]
 
     @property
     def name(self):
-        """Return the name of the sensor, if any."""
+        """Return the name of the sensor."""
         return _INFO[self._key][0]
 
     @property
-    def icon(self):
-        """Icon to use in the frontend, if any."""
-        return _INFO[self._key][2]
+    def entity_id(self):
+        """Return the entity ID for this entity."""
+        if self._gb == 'M':
+            return 'sensor.naver_weather_{}'.format(self._key.lower())
+        else:
+            return 'sensor.naver_weather_sub_{}'.format(self._key.lower())
 
     @property
     def state(self):
@@ -520,7 +528,7 @@ class childSensor(Entity):
             'name': 'Naver Weather',
             'manufacturer': 'naver.com',
             'model': 'naver_weather',
-            'sw_version': '1.1.4'
+            'sw_version': '1.2.1'
         }
 
     @property
@@ -538,34 +546,34 @@ class NWeatherSensor(Entity):
 
     def __init__(self, name, api, child, gb):
         """Initialize the NWeather sensor."""
-        self._name = name
+        self._icon  = 'hass:weather-partly-cloudy'
+        self._name  = '[다중 속성] 네이버 날씨'
         self._api   = api
         self._child = child
-        self._icon  = 'mdi:weather-partly-cloudy'
         self._gb    = gb
 
     @property
-    def entity_id(self):
-        """Return the entity ID."""
-        if self._gb == 'M':
-            return 'sensor.naver_weather'
-        else:
-            return 'sensor.naver_weather_sub'
+    def icon(self):
+        """Return the icon to use in the frontend."""
+        return self._icon
 
     @property
     def name(self):
-        """Return the name of the sensor, if any."""
-        return '네이버 날씨'
+        """Return the name of the sensor."""
+        return self._name
 
     @property
-    def icon(self):
-        """Icon to use in the frontend, if any."""
-        return self._icon
+    def entity_id(self):
+        """Return the entity ID for this entity."""
+        if self._gb == 'M':
+            return 'sensor.multiple_attributes_naver_weather'
+        else:
+            return 'sensor.multiple_attributes_naver_weather_sub'
 
     @property
     def state(self):
         """Return the state of the sensor."""
-        return self._api._sensor["WeatherCast"]
+        return self._api._sensor["Weather_Condition"]
 
     def update(self):
         """Get the latest state of the sensor."""
@@ -601,8 +609,8 @@ class NWeatherSensor(Entity):
     def device_info(self):
         """Return information about the device."""
         return {
-            "identifiers": {('naver_weather', 'quality')},
+            "identifiers": {('multiple_attributes_naver_weather', 'quality')},
             'name': 'Naver Weather',
             'manufacturer': 'naver.com',
-            'model': 'naver_weather'
+            'model': 'multiple_attributes_naver_weather'
         }
