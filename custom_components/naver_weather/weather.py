@@ -73,7 +73,7 @@ _INFO = {
     'Wind_Direction':       ['네이버 날씨 - 현재 풍향',       '',      'hass:weather-windy'],
     'Precipitation':        ['네이버 날씨 - 시간당 강수량',    'mm',    'hass:weather-pouring'],
     'Ultraviolet_Index':    ['네이버 날씨 - 자외선 지수',      '',      'hass:weather-sunny-alert'],
-    'Ultraviolet_Grade':    ['네이버 날씨 - 자외선 수준',      '',      'hass:weather-sunny-alert'],
+    'Ultraviolet_Level':    ['네이버 날씨 - 자외선 수준',      '',      'hass:weather-sunny-alert'],
     'Ozon':                 ['네이버 날씨 - 오존',           'ppm',   'hass:alpha-o-circle'],
     'Ozon_Level':           ['네이버 날씨 - 오존 수준',       '',      'hass:alpha-o-circle'],
     'Fine_Dust':            ['네이버 날씨 - 미세먼지',        'μg/m³', 'hass:blur'],
@@ -235,16 +235,16 @@ class NWeatherAPI:
 
 
             # 자외선 등급
-            Ultraviolet_Grade = "-"
+            Ultraviolet_Level = "-"
 
             try:
                 if indicator is not None:
-                    Ultraviolet_Grade_Select = indicator.select("span")
+                    Ultraviolet_Level_Select = indicator.select("span")
 
-                    Ultraviolet_Grade = Ultraviolet_Grade_Select[0].text.replace(Ultraviolet_Index, "")
+                    Ultraviolet_Level = Ultraviolet_Level_Select[0].text.replace(Ultraviolet_Index, "")
             except Exception as ex:
-                Ultraviolet_Grade = 'Error'
-                _LOGGER.error("Failed to update NWeather API UltravioletGrade Error : %s", ex )
+                Ultraviolet_Level = 'Error'
+                _LOGGER.error("Failed to update NWeather API UltravioletLevel Error : %s", ex )
 
             # 미세먼지, 초미세먼지, 오존 수준
             CheckDust1 = soup.find('div', {'class': 'sub_info'})
@@ -419,7 +419,7 @@ class NWeatherAPI:
             ws["Wind_Direction"]       = Wind_Direction
             ws['Precipitation']        = Precipitation
             ws["Ultraviolet_Index"]    = Ultraviolet_Index
-            ws["Ultraviolet_Grade"]    = Ultraviolet_Grade
+            ws["Ultraviolet_Level"]    = Ultraviolet_Level
             ws["Ozon"]                 = Ozon
             ws["Ozon_Level"]           = Ozon_Level
             ws["Fine_Dust"]            = Fine_Dust
