@@ -62,7 +62,7 @@ _CONDITIONS = {
 
 # naver provide infomation
 _INFO = {
-    'Location':             ['네이버 날씨 - 위치',            '',      'hass:map-marker-radius'],
+    'Location':             ['네이버 날씨 - 위치',           '',      'hass:map-marker-radius'],
     'Weather_Condition':    ['네이버 날씨 - 현재 날씨',       '',      'hass:weather-cloudy'],
     'Current_Temperature':  ['네이버 날씨 - 현재 온도',       '°C',    'hass:thermometer'],
     'Low_Temperature':      ['네이버 날씨 - 최저 온도',       '°C',    'hass:thermometer-chevron-down'],
@@ -71,14 +71,15 @@ _INFO = {
     'Humidity':             ['네이버 날씨 - 현재 습도',       '%',     'hass:water-percent'],
     'Wind_Speed':           ['네이버 날씨 - 현재 풍속',       'm/s',   'hass:weather-windy'],
     'Wind_Direction':       ['네이버 날씨 - 현재 풍향',       '',      'hass:weather-windy'],
-    'Precipitation':        ['네이버 날씨 - 시간당 강수량',   'mm',    'hass:weather-pouring'],
-    'Ultraviolet_Index':    ['네이버 날씨 - 자외선지수',      '',      'hass:weather-sunny-alert'],
-    'Ozon':                 ['네이버 날씨 - 오존',            'ppm',   'hass:alpha-o-circle'],
+    'Precipitation':        ['네이버 날씨 - 시간당 강수량',    'mm',    'hass:weather-pouring'],
+    'Ultraviolet_Index':    ['네이버 날씨 - 자외선 지수',      '',      'hass:weather-sunny-alert'],
+    'Ultraviolet_Grade':    ['네이버 날씨 - 자외선 수준',      '',      'hass:weather-sunny-alert'],
+    'Ozon':                 ['네이버 날씨 - 오존',           'ppm',   'hass:alpha-o-circle'],
     'Ozon_Level':           ['네이버 날씨 - 오존 수준',       '',      'hass:alpha-o-circle'],
     'Fine_Dust':            ['네이버 날씨 - 미세먼지',        'μg/m³', 'hass:blur'],
-    'Fine_Dust_Level':      ['네이버 날씨 - 미세먼지 수준',   '',      'hass:blur'],
-    'Ultrafine_Dust':       ['네이버 날씨 - 초미세먼지',      'μg/m³', 'hass:blur-linear'],
-    'Ultrafine_Dust_Level': ['네이버 날씨 - 초미세먼지 수준', '',      'hass:blur-linear'],
+    'Fine_Dust_Level':      ['네이버 날씨 - 미세먼지 수준',    '',      'hass:blur'],
+    'Ultrafine_Dust':       ['네이버 날씨 - 초미세먼지',      'μg/m³',  'hass:blur-linear'],
+    'Ultrafine_Dust_Level': ['네이버 날씨 - 초미세먼지 수준',  '',       'hass:blur-linear'],
     'Tomorrow_Morning_Temperature':         ['네이버 날씨 - 내일 최저 온도', '°C', 'hass:thermometer-chevron-down'],
     'Tomorrow_Morning_Weather_Condition':   ['네이버 날씨 - 내일 오전 날씨', '',   'hass:weather-cloudy'],
     'Tomorrow_Afternoon_Temperature':       ['네이버 날씨 - 내일 최고 온도', '°C', 'hass:thermometer-chevron-up'],
@@ -213,12 +214,37 @@ class NWeatherAPI:
                 for rain in TodayPrecipitationSelect:
                     Precipitation = rain.text
 
-            # 자외선지수
-            Ultraviolet_Index_Select = soup.find('span', {'class' : 'indicator'}).select('span > span.num')
-            Ultraviolet_Index = '-'
+            # today_area
+            today_area = soup.find("div", {"class": "today_area _mainTabContent"})
 
-            for uv in Ultraviolet_Index_Select:
-                Ultraviolet_Index = uv.text
+            # today_area > indicator
+            indicator = today_area.find("span", {"class": "indicator"})
+
+            # 자외선 지수
+            Ultraviolet_Index = "-"
+
+            try:
+                if indicator is not None:
+                    Ultraviolet_Index_Select = indicator.select("span > span.num")
+
+                    for uv in Ultraviolet_Index_Select:
+                        Ultraviolet_Index = uv.text
+            except Exception as ex:
+                Ultraviolet_Index = 'Error'
+                _LOGGER.error("Failed to update NWeather API UltravioletIndex Error : %s", ex )
+
+
+            # 자외선 등급
+            Ultraviolet_Grade = "-"
+
+            try:
+                if indicator is not None:
+                    Ultraviolet_Grade_Select = indicator.select("span")
+
+                    Ultraviolet_Grade = Ultraviolet_Grade_Select[0].text.replace(Ultraviolet_Index, "")
+            except Exception as ex:
+                Ultraviolet_Grade = 'Error'
+                _LOGGER.error("Failed to update NWeather API UltravioletGrade Error : %s", ex )
 
             # 미세먼지, 초미세먼지, 오존 수준
             CheckDust1 = soup.find('div', {'class': 'sub_info'})
@@ -227,12 +253,51 @@ class NWeatherAPI:
             for i in CheckDust2.select('dd'):
                 CheckDust.append(i.text)
 
-            Fine_Dust       = CheckDust[0].split('㎍/㎥')[0]
-            Fine_Dust_Level = CheckDust[0].split('㎍/㎥')[1] if CheckDust[0].split('㎍/㎥')[1] else '-'
-            Ultrafine_Dust       = CheckDust[1].split('㎍/㎥')[0]
-            Ultrafine_Dust_Level = CheckDust[1].split('㎍/㎥')[1] if CheckDust[1].split('㎍/㎥')[1] else '-'
-            Ozon       = CheckDust[2].split('ppm')[0]
-            Ozon_Level = CheckDust[2].split('ppm')[1] if CheckDust[2].split('ppm')[1] else '-'
+            Fine_Dust = '-'
+            Fine_Dust_Level = '-'
+            Ultrafine_Dust = '-'
+            Ultrafine_Dust_Level = '-'
+
+            try:
+                Fine_Dust = CheckDust[0].split('㎍/㎥')[0]
+            except Exception as ex:
+                Fine_Dust = 'Error'
+                _LOGGER.error("Failed to update NWeather API FineDust Error : %s", ex )
+
+            try:
+                Fine_Dust_Level = CheckDust[0].split('㎍/㎥')[1]
+            except Exception as ex:
+                Fine_Dust_Level = 'Error'
+                _LOGGER.error("Failed to update NWeather API FineDustLevel Error : %s", ex )
+
+            try:
+                Ultrafine_Dust = CheckDust[1].split('㎍/㎥')[0]
+            except Exception as ex:
+                Ultrafine_Dust = 'Error'
+                _LOGGER.error("Failed to update NWeather API UtrafineDust Error : %s", ex )
+
+            try:
+                Ultrafine_Dust_Level = CheckDust[1].split('㎍/㎥')[1]
+            except Exception as ex:
+                Ultrafine_Dust_Level = 'Error'
+                _LOGGER.error("Failed to update NWeather API UtrafineDustLevel Error : %s", ex )
+
+            # 오존
+            Ozon = '-'
+            Ozon_Level = '-'
+
+            try:
+                Ozon = CheckDust[2].split("ppm")[0]
+            except Exception as ex:
+                Ozon = 'Error'
+                _LOGGER.error("Failed to update NWeather API Ozon Error : %s", ex )
+
+            #오존등급
+            try:
+                Ozon_Level = CheckDust[2].split("ppm")[1]
+            except Exception as ex:
+                Ozon_Level = 'Error'
+                _LOGGER.error("Failed to update NWeather API OzonLevel Error : %s", ex )
 
             # condition
             today_area = soup.find('div', {'class' : 'today_area _mainTabContent'})
@@ -332,7 +397,7 @@ class NWeatherAPI:
             #날씨
             weather = dict()
             weather["Location"]          = Location
-            weather["Temperature"]       = Temperature
+            weather["Temperature"]       = Current_Temperature
             weather["Humidity"]          = Humidity
             weather["Condition"]         = condition
             weather["Weather_Condition"] = Weather_Condition
@@ -354,6 +419,7 @@ class NWeatherAPI:
             ws["Wind_Direction"]       = Wind_Direction
             ws['Precipitation']        = Precipitation
             ws["Ultraviolet_Index"]    = Ultraviolet_Index
+            ws["Ultraviolet_Grade"]    = Ultraviolet_Grade
             ws["Ozon"]                 = Ozon
             ws["Ozon_Level"]           = Ozon_Level
             ws["Fine_Dust"]            = Fine_Dust
