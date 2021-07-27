@@ -64,7 +64,7 @@ _CONDITIONS = {
 _INFO = {
     'Location':             ['네이버 날씨 - 위치',            '',      'hass:map-marker-radius'],
     'Weather_Condition':    ['네이버 날씨 - 현재 날씨',       '',      'hass:weather-cloudy'],
-    'Temperature':          ['네이버 날씨 - 현재 온도',       '°C',    'hass:thermometer'],
+    'Current_Temperature':  ['네이버 날씨 - 현재 온도',       '°C',    'hass:thermometer'],
     'Low_Temperature':      ['네이버 날씨 - 최저 온도',       '°C',    'hass:thermometer-chevron-down'],
     'High_Temperature':     ['네이버 날씨 - 최고 온도',       '°C',    'hass:thermometer-chevron-up'],
     'Apparent_Temperature': ['네이버 날씨 - 체감 온도',       '°C',    'hass:thermometer'],
@@ -193,7 +193,7 @@ class NWeatherAPI:
             Location = soup.find('span', {'class':'btn_select'}).text
 
             # 현재 온도
-            Temperature = soup.find('span', {'class': 'todaytemp'}).text
+            Current_Temperature = soup.find('span', {'class': 'todaytemp'}).text
 
             # 현재 날씨
             Weather_Condition = soup.find('p', {'class' : 'cast_txt'}).text
@@ -345,7 +345,7 @@ class NWeatherAPI:
             ws = dict()
             ws["Location"]             = Location
             ws["Weather_Condition"]    = Weather_Condition
-            ws["Temperature"]          = Temperature
+            ws["Current_Temperature"]  = Current_Temperature
             ws["Low_Temperature"]      = Low_Temperature
             ws["High_Temperature"]     = High_Temperature
             ws["Apparent_Temperature"] = Apparent_Temperature
