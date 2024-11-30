@@ -43,7 +43,7 @@ from .nweather_device import NWeatherDevice
 
 _LOGGER = logging.getLogger(__name__)
 
-SCAN_INTERVAL = timedelta(minutes=10)
+SCAN_INTERVAL = timedelta(minutes=5)
 
 
 async def async_setup_entry(hass, config_entry, async_add_entities):
@@ -121,7 +121,7 @@ class NWeatherMain(NWeatherDevice, WeatherEntity):
     @property
     def attribution(self):
         """Return the attribution."""
-        return f"{self.api.result.get(LOCATION[0])} - Weather forecast from Naver, Powered by miumida"
+        return f"{self.api.result.get(LOCATION[0])}"
 
     async def async_forecast_daily(self) -> list[Forecast] | None:
         """Return the daily forecast in native units.
@@ -216,4 +216,3 @@ class NWeatherMain(NWeatherDevice, WeatherEntity):
                     return pm
 
         return am
-
