@@ -6,7 +6,7 @@ from homeassistant.const import (
     UnitOfTemperature,
     UnitOfSpeed,
     UnitOfVolumetricFlux,
-    
+
     PERCENTAGE,
     CONCENTRATION_PARTS_PER_MILLION,
     CONCENTRATION_MICROGRAMS_PER_CUBIC_METER,
@@ -32,7 +32,7 @@ CONF_REGION = "region"
 DEFAULT_AREA = "날씨"
 
 OPT_SCAN_INT = "scan_interval"
-DEFAULT_SCAN_INT = 15
+DEFAULT_SCAN_INT = 5
 
 
 def int_between(min_int, max_int):
@@ -90,46 +90,46 @@ CONDITIONS = {
 }
 
 # naver provide infomation
-LOCATION    = ["LocationInfo", "위치", "", "mdi:map-marker-radius", ""]
-CONDITION   = ["Condition",    "날씨", "", "", ""]
-NOW_CAST    = ["WeatherCast",  "현재날씨정보", "", "mdi:weather-cloudy", ""]
-NOW_WEATHER = ["NowWeather",   "현재날씨",     "", "mdi:weather-cloudy", ""]
+LOCATION = ["Location_Info", "날씨 - 위치", "", "mdi:map-marker-radius", ""]
+CONDITION = ["Condition", "날씨", "", "", ""]
+NOW_CAST = ["Weather_Condition_Comparison", "날씨 - 현재 날씨 비교", "", "mdi:weather-cloudy", ""]
+NOW_WEATHER = ["Weather_Condition",   "날씨 - 현재 날씨", "", "mdi:weather-cloudy", ""]
 
-NOW_TEMP = ["NowTemp", "현재온도", UnitOfTemperature.CELSIUS, "mdi:thermometer", SensorDeviceClass.TEMPERATURE]
-MIN_TEMP = ["TodayMinTemp", "최저온도", UnitOfTemperature.CELSIUS, "mdi:thermometer-chevron-down", SensorDeviceClass.TEMPERATURE]
-MAX_TEMP = ["TodayMaxTemp", "최고온도", UnitOfTemperature.CELSIUS, "mdi:thermometer-chevron-up", SensorDeviceClass.TEMPERATURE]
-FEEL_TEMP = ["TodayFeelTemp", "체감온도", UnitOfTemperature.CELSIUS, "mdi:thermometer", SensorDeviceClass.TEMPERATURE]
+NOW_TEMP = ["Temperature", "날씨 - 현재 온도", UnitOfTemperature.CELSIUS, "mdi:thermometer", SensorDeviceClass.TEMPERATURE]
+MIN_TEMP = ["Low_Temperature", "날씨 - 최저 온도", UnitOfTemperature.CELSIUS, "mdi:thermometer-chevron-down", SensorDeviceClass.TEMPERATURE]
+MAX_TEMP = ["High_Temperature","날씨 - 최고 온도", UnitOfTemperature.CELSIUS, "mdi:thermometer-chevron-up", SensorDeviceClass.TEMPERATURE]
+FEEL_TEMP = ["Apparent_Temperature", "날씨 - 체감 온도", UnitOfTemperature.CELSIUS, "mdi:thermometer", SensorDeviceClass.TEMPERATURE]
 
-NOW_HUMI = ["Humidity", "현재습도", PERCENTAGE, "mdi:water-percent", SensorDeviceClass.HUMIDITY]
+NOW_HUMI = ["Humidity", "날씨 - 현재 습도", PERCENTAGE, "mdi:water-percent", SensorDeviceClass.HUMIDITY]
 
-WIND_SPEED = ["WindSpeed",   "현재풍속", UnitOfSpeed.METERS_PER_SECOND, "mdi:weather-windy", ""]
-WIND_DIR   = ["WindBearing", "현재풍향", "", "mdi:windsock", ""]
+WIND_SPEED = ["Wind_Speed", "날씨 - 현재 풍속", UnitOfSpeed.METERS_PER_SECOND, "mdi:weather-windy", SensorDeviceClass.SPEED]
+WIND_DIR = ["Wind_Direction", "날씨 - 현재 풍향", "", "mdi:windsock", ""]
 
-RAINFALL = ["Rainfall", "시간당강수량", UnitOfVolumetricFlux.MILLIMETERS_PER_HOUR, "mdi:weather-pouring", ""]
+RAINFALL = ["Precipitation", "날씨 - 시간당 강수량", UnitOfVolumetricFlux.MILLIMETERS_PER_HOUR, "mdi:weather-pouring", SensorDeviceClass.PRECIPITATION_INTENSITY]
 
-UV = ["TodayUV", "자외선지수", "", "mdi:weather-sunny-alert", ""]
-UV_GRADE = ["TodayUVGrade", "자외선등급", "", "mdi:weather-sunny-alert", ""]
+UV = ["Ultraviolet_Index", "날씨 - 자외선 지수", "", "mdi:weather-sunny-alert", ""]
+UV_GRADE = ["Ultraviolet_Level", "날씨 - 자외선 수준", "", "mdi:weather-sunny-alert", ""]
 
-UDUST = ["UltraFineDust", "초미세먼지", CONCENTRATION_MICROGRAMS_PER_CUBIC_METER, "mdi:blur-linear",SensorDeviceClass.PM25]
-NDUST = ["FineDust", "미세먼지", CONCENTRATION_MICROGRAMS_PER_CUBIC_METER, "mdi:blur", SensorDeviceClass.PM25]
-UDUST_GRADE = ["UltraFineDustGrade", "초미세먼지등급", "", "mdi:blur-linear", ""]
-NDUST_GRADE = ["FineDustGrade", "미세먼지등급", "", "mdi:blur", ""]
+UDUST = ["Ultrafine_Dust", "날씨 - 초미세먼지", "µg/m³", "mdi:blur-linear", SensorDeviceClass.PM25]
+NDUST = ["Fine_Dust", "날씨 - 미세먼지", "µg/m³", "mdi:blur", SensorDeviceClass.PM10]
+UDUST_GRADE = ["Ultrafine_Dust_Level", "날씨 - 초미세먼지 수준", "", "mdi:blur-linear", ""]
+NDUST_GRADE = ["Fine_Dust_Level", "날씨 - 미세먼지 수준", "", "mdi:blur", ""]
 
-OZON_GRADE = ["OzonGrade", "오존", "", "mdi:alpha-o-circle", ""]
-CO_GRADE  = ["coGrade", "일산화탄소", "", "mdi:molecule-co", ""]
-SO2_GRADE = ["so2Grade", "아황산가스", "", "mdi:alpha-s-circle", ""]
-NO2_GRADE = ["no2Grade", "이산화질소", "", "mdi:alpha-n-circle", ""]
-CAI_GRADE = ["caiGrade", "통합대기", "", "mdi:alpha-c-circle", ""]
+OZON_GRADE = ["Ozon_Level", "날씨 - 오존 수준", "", "mdi:alpha-o-circle", ""]
+CO_GRADE  = ["Carbon_Monoxide_Level",  "날씨 - 일산화탄소 수준", "", "mdi:molecule-co", ""]
+SO2_GRADE = ["Sulfur_Dioxide_Level", "날씨 - 아황산가스 수준", "", "mdi:alpha-s-circle", ""]
+NO2_GRADE = ["Nitrogen_Dioxide_Level", "날씨 - 이산화질소 수준", "", "mdi:alpha-n-circle", ""]
+CAI_GRADE = ["CAI_Index", "날씨 - 통합대기환경지수",   "", "mdi:alpha-c-circle", SensorDeviceClass.AQI]
 
-TOMORROW_AM = ["tomorrowMState", "내일오전날씨", "", "mdi:weather-cloudy", ""]
-TOMORROW_PM = ["tomorrowAState", "내일오후날씨", "", "mdi:weather-cloudy", ""]
-TOMORROW_MAX = ["tomorrowATemp", "내일최고온도", UnitOfTemperature.CELSIUS, "mdi:thermometer-chevron-up", SensorDeviceClass.TEMPERATURE]
-TOMORROW_MIN = ["tomorrowMTemp", "내일최저온도", UnitOfTemperature.CELSIUS, "mdi:thermometer-chevron-down", SensorDeviceClass.TEMPERATURE]
+TOMORROW_AM = ["Tomorrow_Morning_Weather_Condition", "날씨 - 내일 오전 날씨", "", "mdi:weather-cloudy", ""]
+TOMORROW_PM = ["Tomorrow_Afternoon_Weather_Condition", "날씨 - 내일 오후 날씨", "", "mdi:weather-cloudy", ""]
+TOMORROW_MAX = ["Tomorrow_High_Temperature", "날씨 - 내일 최고 온도", UnitOfTemperature.CELSIUS, "mdi:thermometer-chevron-up", SensorDeviceClass.TEMPERATURE]
+TOMORROW_MIN = ["Tomorrow_Low_Temperature", "날씨 - 내일 최저 온도", UnitOfTemperature.CELSIUS, "mdi:thermometer-chevron-down", SensorDeviceClass.TEMPERATURE]
 
-RAINY_START     = ["rainyStart",    "비시작시간오늘", "", "mdi:weather-rainy", ""]
-RAINY_START_TMR = ["rainyStartTmr", "비시작시간오늘내일", "", "mdi:weather-rainy", ""]
+RAINY_START = ["Rain_Start_Time", "날씨 - 오늘 비 시작 시간", "", "mdi:weather-rainy", ""]
+RAINY_START_TMR = ["Tomorrow_Rain_Start_Time", "날씨 - 내일 비 시작 시간", "", "mdi:weather-rainy", ""]
 
-RAIN_PERCENT = ["rainPercent", "강수확률", "%", "mdi:weather-rainy", ""]
+RAIN_PERCENT = ["Precipitation_Probability", "날씨 - 강수 확률", "%", "mdi:weather-rainy", ""]
 
 PUBLIC_TIME_C = ["publicTimeC", "현재날씨 발표시간",   "", "mdi:time", ""]
 PUBLIC_TIME_H = ["publicTimeH", "시간별날씨 발표시간", "", "mdi:time", ""]
